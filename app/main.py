@@ -55,9 +55,9 @@ def substitute_domain(link):
 
 @app.get('/gutenberg/search')
 async def search(q: str, authorize: AuthJWT = Depends()):
-    """Refresh access token
+    """Search texts in Gutendex
     """
-    # authorize.jwt_refresh_token_required()
+    authorize.jwt_required()
 
     search_url = f'{CONFIG.gutendex_url}/books?search={q}'
     async with aiohttp.ClientSession() as session:
@@ -79,7 +79,7 @@ async def search(q: str, authorize: AuthJWT = Depends()):
                     books.append(dict(id=book['id'], title=book['title'],
                                       lang=book['languages'][0],
                                       author=book['authors'][0]['name'],
-                                      text=download_link,
-                                      icon=icon_link))
+                                      bookUrl=download_link,
+                                      iconUrl=icon_link))
 
     return books

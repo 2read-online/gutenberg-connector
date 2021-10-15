@@ -76,9 +76,10 @@ async def search(q: str, authorize: AuthJWT = Depends()):
                     if 'image/jpeg' in formats_:
                         icon_link = substitute_domain(formats_['image/jpeg'])
 
+                    author = book['authors'][0]['name'] if len(book['authors']) > 0 else 'unknown'
                     books.append(dict(id=book['id'], title=book['title'],
-                                      lang=book['languages'][0],
-                                      author=book['authors'][0]['name'],
+                                      language=book['languages'][0],
+                                      author=author,
                                       bookUrl=download_link,
                                       iconUrl=icon_link))
 

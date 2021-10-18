@@ -11,6 +11,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from app.config import CONFIG
+from app.model import Book
 
 logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
@@ -72,15 +73,15 @@ async def search(q: str, authorize: AuthJWT = Depends()):
 
                 if download_link:
                     download_link = substitute_domain(download_link)
-                    icon_link = None
+                    cover_link = None
                     if 'image/jpeg' in formats_:
-                        icon_link = substitute_domain(formats_['image/jpeg'])
+                        cover_link = substitute_domain(formats_['image/jpeg'])
 
                     author = book['authors'][0]['name'] if len(book['authors']) > 0 else 'unknown'
-                    books.append(dict(id=book['id'], title=book['title'],
+                    books.append(Book(id=book['id'], title=book['title'],
                                       language=book['languages'][0],
                                       author=author,
                                       bookUrl=download_link,
-                                      iconUrl=icon_link))
+                                      coverUrl=cover_link))
 
     return books

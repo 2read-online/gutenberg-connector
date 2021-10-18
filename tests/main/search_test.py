@@ -57,14 +57,14 @@ def test__search_ok(mock_get, client, headers, response_ok):
     assert data[0]['language'] == 'de'
     assert data[0]['author'] == 'Hermann, Hesse'
     assert data[0]['bookUrl'] == 'https://gutenberg.org/1.txt'
-    assert data[0]['iconUrl'] == 'https://gutenberg.org/1.jpeg'
+    assert data[0]['coverUrl'] == 'https://gutenberg.org/1.jpeg'
 
     assert data[1]['id'] == '2'
     assert data[1]['title'] == 'Steppenwolf'
     assert data[1]['language'] == 'en'
     assert data[1]['author'] == 'Hermann, Hesse'
     assert data[1]['bookUrl'] == 'https://gutenberg.org/2.txt'
-    assert data[1]['iconUrl'] is None
+    assert data[1]['coverUrl'] is None
 
 
 @patch('aiohttp.ClientSession.get')

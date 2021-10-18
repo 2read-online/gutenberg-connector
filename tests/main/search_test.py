@@ -31,6 +31,18 @@ def fixture_response_ok():
     }
 
 
+@pytest.fixture(name='response_unsupported_format')
+def fixture_unsupported_format(response_ok):
+    response_ok['results'][1]['formats'] = {'text/epub': 'http://url.local/2.epub'}
+    return response_ok
+
+
+@pytest.fixture(name='response_unknown_author')
+def fixture_response_unknown_author(response_ok):
+    response_ok['results'][0]['authors'] = []
+    return response_ok
+
+
 @patch('aiohttp.ClientSession.get')
 def test__search_ok(mock_get, client, headers, response_ok):
     mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_ok])
@@ -53,6 +65,30 @@ def test__search_ok(mock_get, client, headers, response_ok):
     assert data[1]['author'] == 'Hermann, Hesse'
     assert data[1]['bookUrl'] == 'https://gutenberg.org/2.txt'
     assert data[1]['iconUrl'] is None
+
+
+@patch('aiohttp.ClientSession.get')
+def test__search_unsupported_format(mock_get, client, headers, response_unsupported_format):
+    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_unsupported_format])
+
+    resp = client.get('/gutenberg/search?q=Hesse', headers=headers)
+    assert resp.status_code == 200
+
+    data = resp.json()
+    assert len(data) == 1
+    assert data[0]['id'] == '1'
+
+
+@patch('aiohttp.ClientSession.get')
+def test__search_unknown_author(mock_get, client, headers, response_unknown_author):
+    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_unknown_author])
+
+    resp = client.get('/gutenberg/search?q=Hesse', headers=headers)
+    assert resp.status_code == 200
+
+    data = resp.json()
+    assert len(data) == 2
+    assert data[0]['author'] == 'unknown'
 
 
 def test__search_no_jwt(client):

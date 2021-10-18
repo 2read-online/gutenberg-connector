@@ -7,7 +7,7 @@ from tests.main.conftest import get_detail
 
 
 @pytest.fixture(name='response_ok')
-def fixture_response_ok():
+def _fixture_response_ok():
     return {
         'results': [
             {
@@ -32,19 +32,21 @@ def fixture_response_ok():
 
 
 @pytest.fixture(name='response_unsupported_format')
-def fixture_unsupported_format(response_ok):
+def _fixture_unsupported_format(response_ok):
     response_ok['results'][1]['formats'] = {'text/epub': 'http://url.local/2.epub'}
     return response_ok
 
 
 @pytest.fixture(name='response_unknown_author')
-def fixture_response_unknown_author(response_ok):
+def _fixture_response_unknown_author(response_ok):
     response_ok['results'][0]['authors'] = []
     return response_ok
 
 
 @patch('aiohttp.ClientSession.get')
 def test__search_ok(mock_get, client, headers, response_ok):
+    """Should parse a valid response
+    """
     mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_ok])
 
     resp = client.get('/gutenberg/search?q=Hesse', headers=headers)
@@ -69,7 +71,10 @@ def test__search_ok(mock_get, client, headers, response_ok):
 
 @patch('aiohttp.ClientSession.get')
 def test__search_unsupported_format(mock_get, client, headers, response_unsupported_format):
-    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_unsupported_format])
+    """Should skip unsupported format
+    """
+    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(
+        side_effect=[response_unsupported_format])
 
     resp = client.get('/gutenberg/search?q=Hesse', headers=headers)
     assert resp.status_code == 200
@@ -81,7 +86,10 @@ def test__search_unsupported_format(mock_get, client, headers, response_unsuppor
 
 @patch('aiohttp.ClientSession.get')
 def test__search_unknown_author(mock_get, client, headers, response_unknown_author):
-    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[response_unknown_author])
+    """Should set author as unknown if no data in response
+    """
+    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(
+        side_effect=[response_unknown_author])
 
     resp = client.get('/gutenberg/search?q=Hesse', headers=headers)
     assert resp.status_code == 200
@@ -92,7 +100,8 @@ def test__search_unknown_author(mock_get, client, headers, response_unknown_auth
 
 
 def test__search_no_jwt(client):
-    """Should check access token"""
+    """Should check access token
+    """
     resp = client.get('/gutenberg/search?q=Hesse')
 
     assert resp.status_code == 401

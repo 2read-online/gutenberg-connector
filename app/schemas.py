@@ -1,9 +1,11 @@
+"""Schemas for HTTP data"""
 from typing import Optional
 
 from pydantic import BaseModel, Field, HttpUrl
 
 
 class Book(BaseModel):
+    """Book from Gutendex"""
     id: str = Field(description='ID of book on Gutenberg')
     title: str = Field(description='Title')
     language: str = Field(description='Language')

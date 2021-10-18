@@ -3,15 +3,15 @@ import logging
 from typing import Optional, Dict
 from urllib.parse import urlparse as url
 
-import aiohttp
 from fastapi import FastAPI, Depends
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+import aiohttp
 
 from app.config import CONFIG
-from app.model import Book
+from app.schemas import Book
 
 logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def authjwt_exception_handler(_request: Request, exc: AuthJWTException):
     )
 
 
-def find_supported_format(formats: Dict[str, str]) -> Optional[str]:
+def _find_supported_format(formats: Dict[str, str]) -> Optional[str]:
     for mime_type, link in formats.items():
         if mime_type.strip().replace(' ', '').lower() in SUPPORTED_FORMATS:
             return link
@@ -50,7 +50,7 @@ def find_supported_format(formats: Dict[str, str]) -> Optional[str]:
     return None
 
 
-def substitute_domain(link):
+def _substitute_domain(link):
     return CONFIG.gutenberg_url + url(link).path
 
 
@@ -69,13 +69,13 @@ async def search(q: str, authorize: AuthJWT = Depends()):
             books = []
             for book in data['results']:
                 formats_ = book['formats']
-                download_link = find_supported_format(formats_)
+                download_link = _find_supported_format(formats_)
 
                 if download_link:
-                    download_link = substitute_domain(download_link)
+                    download_link = _substitute_domain(download_link)
                     cover_link = None
                     if 'image/jpeg' in formats_:
-                        cover_link = substitute_domain(formats_['image/jpeg'])
+                        cover_link = _substitute_domain(formats_['image/jpeg'])
 
                     author = book['authors'][0]['name'] if len(book['authors']) > 0 else 'unknown'
                     books.append(Book(id=book['id'], title=book['title'],

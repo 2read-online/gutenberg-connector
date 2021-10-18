@@ -1,9 +1,10 @@
 # pylint: skip-file
 import json
+from typing import Dict
+
 import pytest
 from fastapi_jwt_auth import AuthJWT
 from starlette.testclient import TestClient
-from typing import Dict
 
 
 @pytest.fixture

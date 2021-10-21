@@ -10,7 +10,8 @@ services:
     networks:
       2read_online:
     command: uvicorn app.main:app --reload --host 0.0.0.0
-
+    ports:
+      - "8000:8000"
 networks:
   2read_online:
     external: true

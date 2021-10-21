@@ -59,6 +59,8 @@ class Book(BaseModel):
 
     @classmethod
     def from_gutendex(cls, data: dict):
+        """Parse Gutendex output
+        """
         formats_ = data['formats']
         download_link = _find_supported_format(formats_)
 

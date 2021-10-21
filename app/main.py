@@ -61,8 +61,11 @@ async def search(q: str, authorize: AuthJWT = Depends()):
 
 
 @app.post('/gutenberg/save/{book_id}')
-async def save(book_id: str, lang: str, authorize: AuthJWT = Depends(), authorization: str = Header(None)):
-    # authorize.jwt_required()
+async def save(book_id: str, lang: str,
+               authorize: AuthJWT = Depends(), authorization: str = Header(None)):
+    """Download a book and save it in text storage
+    """
+    authorize.jwt_required()
 
     search_url = f'{CONFIG.gutendex_url}/books?ids={book_id}'
 

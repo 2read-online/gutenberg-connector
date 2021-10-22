@@ -49,7 +49,6 @@ async def search(q: str, authorize: AuthJWT = Depends()):
     async with aiohttp.ClientSession() as session:
         async with session.get(search_url) as resp:
             data = await resp.json()
-            logger.info(data)
 
             books: List[Book] = []
             for result in data['results']:
@@ -89,6 +88,6 @@ async def save(book_id: str, lang: str,
                                 headers={'Authorization': authorization}) as resp:
             data = await resp.json()
             if not resp.ok:
-                raise HTTPException(status_code=resp.status, detail=data)
+                raise HTTPException(status_code=resp.status, detail=data['detail'])
 
             return data

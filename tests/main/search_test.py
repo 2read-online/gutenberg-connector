@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name, too-many-arguments
-"""Test handling Translate Request"""
+"""Test handling /gutenberg/search endpoint
+"""
 import pytest
 from asynctest import patch, CoroutineMock
 

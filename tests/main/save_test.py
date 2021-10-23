@@ -12,11 +12,11 @@ def _gutendex_response_ok():
     return {
         'results': [
             {
-                'id': '1',
-                'title': 'Maerechen',
+                'id': '3',
+                'title': 'Steppenwolf',
                 'formats': {
-                    'text/plain; charset=utf-8': 'http://url.local/1.txt',
-                    'image/jpeg': 'http://url.local/1.jpeg'
+                    'text/plain; charset=utf-8': 'http://url.local/3.txt',
+                    'image/jpeg': 'http://url.local/3.jpeg'
                 },
                 'authors': [{'name': 'Hermann, Hesse'}],
                 'languages': ['de']
@@ -33,18 +33,23 @@ def _text():
 @patch('aiohttp.ClientSession.post')
 @patch('aiohttp.ClientSession.get')
 def test__save_ok(mock_get, mock_post, client, headers, gutendex_response_ok, text):
-    """Should request information from Gutendex then download text from Gutenberg and then save it in text storage
+    """Should request information from Gutendex
+    then download text from Gutenberg and then save it in text storage
     """
-    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[gutendex_response_ok])
-    mock_get.return_value.__aenter__.return_value.text = CoroutineMock(side_effect=[text])
-    mock_post.return_value.__aenter__.return_value.json = CoroutineMock(side_effect=[{'id': 1}])
+    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(
+        side_effect=[gutendex_response_ok])
+    mock_get.return_value.__aenter__.return_value.text = CoroutineMock(
+        side_effect=[text])
+    mock_post.return_value.__aenter__.return_value.json = CoroutineMock(
+        side_effect=[{'id': 1}])
 
-    resp = client.post('/gutenberg/save/1?lang=en', headers=headers)
+    resp = client.post('/gutenberg/save/3?lang=en', headers=headers)
 
     assert resp.status_code == 200
 
-    assert mock_get.call_args_list[0][0] == ('https://gutendex.com/books?ids=1',)
-    assert mock_get.call_args_list[1][0] == (Book.from_gutendex(gutendex_response_ok['results'][0]).book_url,)
+    assert mock_get.call_args_list[0][0] == ('https://gutendex.com/books?ids=3',)
+    assert mock_get.call_args_list[1][0] == (Book.from_gutendex(
+        gutendex_response_ok['results'][0]).book_url,)
 
     assert mock_post.call_args_list[0][0][0] == 'http://text-storage:8000/text/create'
 
@@ -53,7 +58,7 @@ def test__save_ok(mock_get, mock_post, client, headers, gutendex_response_ok, te
                          'content': 'Some text',
                          'sourceLang': 'deu',
                          'targetLang': 'eng',
-                         'title': 'Maerechen'}
+                         'title': 'Steppenwolf'}
 
 
 def test__save_no_jwt(client):

@@ -1,0 +1,13 @@
+version: '3'
+services:
+  gutenberg-connector:
+    build:
+      context: .
+      args:
+        REQUEREMENTS: requirements/test.txt
+    volumes:
+      - ./app:/service/app
+
+    command: uvicorn app.main:app --reload --host 0.0.0.0
+    ports:
+      - "8000:8000"

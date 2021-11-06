@@ -1,4 +1,5 @@
 """Web application"""
+import gzip
 import logging
 from typing import List
 
@@ -74,7 +75,12 @@ async def save(book_id: str, lang: str,
             book = Book.from_gutendex(data['results'][0])
 
         async with session.get(book.book_url) as resp:
-            content = await resp.text()
+            is_zip = book.book_url.path.split('.')[-1] == 'zip'
+            data: bytes = await resp.read()
+            if is_zip:
+                data = gzip.decompress(data)
+
+            content = data.decode(resp.get_encoding())
 
         new_text = {
             'title': book.title,

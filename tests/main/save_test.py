@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name, too-many-arguments
 """Test handling /gutenberg/save endpoint"""
+import gzip
 import pytest
 from asynctest import patch, CoroutineMock
 
@@ -7,8 +8,7 @@ from app.model import Book
 from tests.main.conftest import get_detail
 
 
-@pytest.fixture(name='gutendex_response_ok')
-def _gutendex_response_ok():
+def _gutendex_book_txt():
     return {
         'results': [
             {
@@ -25,21 +25,33 @@ def _gutendex_response_ok():
     }
 
 
-@pytest.fixture(name='text')
-def _text():
-    return 'Some text'
+def _gutendex_book_zip():
+    info = _gutendex_book_txt()
+    info['results'][0]['formats']['text/plain; charset=utf-8'] = 'http://url.local/3.zip'
+    return info
 
 
+def _text() -> bytes:
+    return b'Some text'
+
+
+def _zip_text() -> bytes:
+    return gzip.compress(b'Some text')
+
+
+@pytest.mark.parametrize('book_info, content',
+                         [(_gutendex_book_txt(), _text()), (_gutendex_book_zip(), _zip_text())])
 @patch('aiohttp.ClientSession.post')
 @patch('aiohttp.ClientSession.get')
-def test__save_ok(mock_get, mock_post, client, headers, gutendex_response_ok, text):
+def test__save_ok(mock_get, mock_post, client, headers, book_info, content):
     """Should request information from Gutendex
     then download text from Gutenberg and then save it in text storage
     """
-    mock_get.return_value.__aenter__.return_value.json = CoroutineMock(
-        side_effect=[gutendex_response_ok])
-    mock_get.return_value.__aenter__.return_value.text = CoroutineMock(
-        side_effect=[text])
+    mock_resp = mock_get.return_value.__aenter__.return_value
+    mock_resp.json = CoroutineMock(side_effect=[book_info])
+    mock_resp.read = CoroutineMock(side_effect=[content])
+    mock_resp.get_encoding.return_value = 'utf-8'
+
     mock_post.return_value.__aenter__.return_value.json = CoroutineMock(
         side_effect=[{'id': 1}])
 
@@ -49,7 +61,7 @@ def test__save_ok(mock_get, mock_post, client, headers, gutendex_response_ok, te
 
     assert mock_get.call_args_list[0][0] == ('https://gutendex.com/books?ids=3',)
     assert mock_get.call_args_list[1][0] == (Book.from_gutendex(
-        gutendex_response_ok['results'][0]).book_url,)
+        book_info['results'][0]).book_url,)
 
     assert mock_post.call_args_list[0][0][0] == 'http://text-storage:8000/text/create'
 

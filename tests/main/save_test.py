@@ -1,7 +1,6 @@
 # pylint: disable=redefined-outer-name, too-many-arguments
 """Test handling /gutenberg/save endpoint"""
 import gzip
-
 import pytest
 from asynctest import patch, CoroutineMock
 

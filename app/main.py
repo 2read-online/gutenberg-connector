@@ -13,7 +13,7 @@ import aiohttp
 from app.config import CONFIG
 from app.model import Book, LANG_CODE_MAP
 
-logging.basicConfig(level='DEBUG')
+logging.basicConfig(level=CONFIG.log_level)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
@@ -57,6 +57,7 @@ async def search(q: str, authorize: AuthJWT = Depends()):
                 if book:
                     books.append(book)
 
+            logger.info('Found %d books for query: %s', len(books), q)
             return books
 
 
@@ -73,6 +74,7 @@ async def save(book_id: str, lang: str,
         async with session.get(search_url) as resp:
             data = await resp.json()
             book = Book.from_gutendex(data['results'][0])
+            logger.debug('Save book: %s', str(book))
 
         async with session.get(book.book_url) as resp:
             is_zip = book.book_url.path.split('.')[-1] == 'zip'
@@ -94,6 +96,7 @@ async def save(book_id: str, lang: str,
                                 headers={'Authorization': authorization}) as resp:
             data = await resp.json()
             if not resp.ok:
+                logger.error('Failed save book: %s', data)
                 raise HTTPException(status_code=resp.status, detail=data['detail'])
 
             return data

@@ -1,6 +1,7 @@
 """Web application"""
-import gzip
+from zipfile import ZipFile
 import logging
+from io import BytesIO
 from typing import List
 
 from fastapi import FastAPI, Depends, HTTPException, Header
@@ -77,10 +78,12 @@ async def save(book_id: str, lang: str,
             logger.debug('Save book: %s', str(book))
 
         async with session.get(book.book_url) as resp:
+            data = await resp.read()
             is_zip = book.book_url.path.split('.')[-1] == 'zip'
-            data: bytes = await resp.read()
             if is_zip:
-                data = gzip.decompress(data)
+                buffer = BytesIO(data)
+                with ZipFile(buffer, 'r') as f:
+                    data = b''.join([f.read(name) for name in f.namelist()])
 
             content = data.decode(resp.get_encoding())
 

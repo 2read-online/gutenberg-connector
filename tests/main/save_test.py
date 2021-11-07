@@ -1,6 +1,8 @@
 # pylint: disable=redefined-outer-name, too-many-arguments
 """Test handling /gutenberg/save endpoint"""
-import gzip
+from io import BytesIO
+from zipfile import ZipFile
+
 import pytest
 from asynctest import patch, CoroutineMock
 
@@ -36,7 +38,11 @@ def _text() -> bytes:
 
 
 def _zip_text() -> bytes:
-    return gzip.compress(b'Some text')
+    buffer = BytesIO()
+    with ZipFile(buffer, 'w') as f:
+        with f.open('text', 'w') as txt:
+            txt.write(b'Some text')
+    return buffer.getvalue()
 
 
 @pytest.mark.parametrize('book_info, content',

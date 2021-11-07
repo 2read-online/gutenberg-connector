@@ -39,8 +39,8 @@ def _text() -> bytes:
 
 def _zip_text() -> bytes:
     buffer = BytesIO()
-    with ZipFile(buffer, 'w') as f:
-        with f.open('text', 'w') as txt:
+    with ZipFile(buffer, 'w') as zip_file:
+        with zip_file.open('text', 'w') as txt:
             txt.write(b'Some text')
     return buffer.getvalue()
 

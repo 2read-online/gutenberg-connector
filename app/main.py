@@ -82,8 +82,8 @@ async def save(book_id: str, lang: str,
             is_zip = book.book_url.path.split('.')[-1] == 'zip'
             if is_zip:
                 buffer = BytesIO(data)
-                with ZipFile(buffer, 'r') as f:
-                    data = b''.join([f.read(name) for name in f.namelist()])
+                with ZipFile(buffer, 'r') as zip_file:
+                    data = b''.join([zip_file.read(name) for name in zip_file.namelist()])
 
             content = data.decode(resp.get_encoding())
 

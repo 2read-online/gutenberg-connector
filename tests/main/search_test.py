@@ -19,14 +19,18 @@ def _fixture_response_ok():
                     'image/jpeg': 'http://url.local/1.jpeg'
                 },
                 'authors': [{'name': 'Hermann, Hesse'}],
-                'languages': ['de']
+                'languages': ['de'],
+                'copyright': False,
+                'content_type': 'Text',
             },
             {
                 'id': '2',
                 'title': 'Steppenwolf',
                 'formats': {'text/plain': 'http://url.local/2.txt'},
                 'authors': [{'name': 'Hermann, Hesse'}],
-                'languages': ['en']
+                'languages': ['en'],
+                'copyright': False,
+                'content_type': 'Text',
             }
         ]
     }

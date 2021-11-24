@@ -1,10 +1,13 @@
 """Schemas for HTTP data"""
+import logging
 from typing import Optional, Dict
 from urllib.parse import urlparse as url
 
 from pydantic import BaseModel, Field, HttpUrl
 
 from app.config import CONFIG
+
+logger = logging.getLogger(__name__)
 
 SUPPORTED_FORMATS = ["text/plain", "text/plain;charset=utf-8"]
 
@@ -61,20 +64,26 @@ class Book(BaseModel):
     def from_gutendex(cls, data: dict):
         """Parse Gutendex output
         """
+        if data['content_type'].strip().lower() != 'text' or data['copyright']:
+            logger.debug('Bad content for %s', data)
+            return None
+
         formats_ = data['formats']
         download_link = _find_supported_format(formats_)
 
-        if download_link:
-            download_link = _substitute_domain(download_link)
-            cover_link = None
-            if 'image/jpeg' in formats_:
-                cover_link = _substitute_domain(formats_['image/jpeg'])
+        if not download_link:
+            logger.debug('No supported format for %s', data)
+            return None
 
-            author = data['authors'][0]['name'] if len(data['authors']) > 0 else 'unknown'
+        download_link = _substitute_domain(download_link)
+        cover_link = None
+        if 'image/jpeg' in formats_:
+            cover_link = _substitute_domain(formats_['image/jpeg'])
 
-            return cls(id=data['id'], title=data['title'],
-                       language=data['languages'][0],
-                       author=author,
-                       bookUrl=download_link,
-                       coverUrl=cover_link)
-        return None
+        author = data['authors'][0]['name'] if len(data['authors']) > 0 else 'unknown'
+
+        return cls(id=data['id'], title=data['title'],
+                   language=data['languages'][0],
+                   author=author,
+                   bookUrl=download_link,
+                   coverUrl=cover_link)

@@ -21,7 +21,9 @@ def _gutendex_book_txt():
                     'image/jpeg': 'http://url.local/3.jpeg'
                 },
                 'authors': [{'name': 'Hermann, Hesse'}],
-                'languages': ['de']
+                'languages': ['de'],
+                'media_type': 'Text',
+                'copyright': False,
             }
         ]
     }

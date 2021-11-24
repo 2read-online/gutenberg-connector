@@ -7,16 +7,17 @@ from app.model import Book
 @fixture(name='book')
 def _gutendex_book_txt():
     return {
-        'id': '3',
+        'id': '4',
+        'content_type': 'Text',
+        'copyright': False,
         'title': 'Steppenwolf',
         'formats': {
-            'text/plain; charset=utf-8': 'http://url.local/3.txt',
-            'image/jpeg': 'http://url.local/3.jpeg'
+            'text/plain; charset=utf-8': 'http://url.local/4.txt',
+            'image/jpeg': 'http://url.local/4.jpeg'
         },
         'authors': [{'name': 'Hermann, Hesse'}],
         'languages': ['de'],
-        'content_type': 'Text',
-        'copyright': False,
+
     }
 
 

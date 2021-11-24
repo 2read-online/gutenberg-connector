@@ -22,7 +22,7 @@ def _gutendex_book_txt():
                 },
                 'authors': [{'name': 'Hermann, Hesse'}],
                 'languages': ['de'],
-                'content_type': 'Text',
+                'media_type': 'Text',
                 'copyright': False,
             }
         ]

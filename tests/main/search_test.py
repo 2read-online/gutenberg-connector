@@ -21,7 +21,7 @@ def _fixture_response_ok():
                 'authors': [{'name': 'Hermann, Hesse'}],
                 'languages': ['de'],
                 'copyright': False,
-                'content_type': 'Text',
+                'media_type': 'Text',
             },
             {
                 'id': '2',
@@ -30,7 +30,7 @@ def _fixture_response_ok():
                 'authors': [{'name': 'Hermann, Hesse'}],
                 'languages': ['en'],
                 'copyright': False,
-                'content_type': 'Text',
+                'media_type': 'Text',
             }
         ]
     }

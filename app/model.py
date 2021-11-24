@@ -64,7 +64,7 @@ class Book(BaseModel):
     def from_gutendex(cls, data: dict):
         """Parse Gutendex output
         """
-        if data['content_type'].strip().lower() != 'text' or data['copyright']:
+        if data['media_type'].strip().lower() != 'text' or data['copyright']:
             logger.debug('Bad content for %s', data)
             return None
 

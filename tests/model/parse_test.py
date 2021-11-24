@@ -8,7 +8,7 @@ from app.model import Book
 def _gutendex_book_txt():
     return {
         'id': '4',
-        'content_type': 'Text',
+        'media_type': 'Text',
         'copyright': False,
         'title': 'Steppenwolf',
         'formats': {
@@ -37,7 +37,7 @@ def test__parse_copyright(book):
 def test__parse_content_type(book):
     """Should parse none if content is not text
     """
-    book['content_type'] = 'non-text'
+    book['media_type'] = 'non-text'
     assert Book.from_gutendex(book) is None
 
 

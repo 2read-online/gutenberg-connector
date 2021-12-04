@@ -63,7 +63,7 @@ def test__save_ok(mock_get, mock_post, client, headers, book_info, content):
     mock_post.return_value.__aenter__.return_value.json = CoroutineMock(
         side_effect=[{'id': 1}])
 
-    resp = client.post('/gutenberg/save/3?lang=en', headers=headers)
+    resp = client.post('/gutenberg/save/3?lang=eng', headers=headers)
 
     assert resp.status_code == 200
 

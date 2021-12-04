@@ -91,7 +91,7 @@ async def save(book_id: str, lang: str,
             'title': book.title,
             'author': book.author,
             'sourceLang': LANG_CODE_MAP[book.language],
-            'targetLang': LANG_CODE_MAP[lang],
+            'targetLang': lang,
             'content': content
         }
 

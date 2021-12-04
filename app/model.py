@@ -24,7 +24,7 @@ LANG_CODE_MAP = {
     'fr': 'fra',
     'hu': 'hun',
     'it': 'ita',
-    'js': 'jpn',
+    'ja': 'jpn',
     'lt': 'lit',
     'lv': 'lav',
     'nl': 'nld',
